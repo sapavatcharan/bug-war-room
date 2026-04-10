@@ -68,14 +68,6 @@ pytest tests/ -v
 
 Sequential pipeline only; **`patch`** binary required for validation; stack parsing assumes **CPython** tracebacks; regression is **`mini_repo/tests`** only.
 
-## Submission checklist
-
-- [ ] `./setup.sh` (or `python3.11` / `python3` venv + `pip install -r requirements.txt`)
-- [ ] `./run_demo_and_tests.sh` — suite green; demo table shows `mini_repo_tests:OK` / `repro_passed_patch_verified`
-- [ ] Skim `generated/.../reports/evidence_pack.md`
-- [ ] Root `mini_repo/` unpatched unless you chose `--apply-candidate-patch`
-- [ ] No secrets in `.env` committed (keep `.env.example` only)
-
 ## License
 
 Submission / portfolio use unless otherwise specified.
