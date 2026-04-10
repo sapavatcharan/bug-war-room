@@ -21,6 +21,7 @@ class LogAnalystAgent:
         triage: TriageOutput,
         tracer: TraceWriter,
     ) -> LogAnalysisOutput:
+        tracer.set_agent("LogAnalystAgent")
         log_path = Path(ctx.log_file_path)
         repo_root = Path(ctx.repo_path)
 

@@ -13,7 +13,12 @@ class TraceWriter:
     def __init__(self, trace_path: Path, run_id: str):
         self.trace_path = trace_path.expanduser().resolve()
         self.run_id = run_id
+        self.agent_name = "Orchestrator"
         self.trace_path.parent.mkdir(parents=True, exist_ok=True)
+
+    def set_agent(self, name: str) -> None:
+        """Tag subsequent tool traces with the active agent (deterministic pipeline)."""
+        self.agent_name = name
 
     def append(self, record: ToolCallRecord) -> None:
         # Re-create parents every append: demo may have cleaned generated/ while another

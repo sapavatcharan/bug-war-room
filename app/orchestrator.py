@@ -147,6 +147,14 @@ class Orchestrator:
                         "Patch validation skipped: need a failing repro artifact and "
                         "candidate_patch.diff on disk."
                     ),
+                    repro_command=[],
+                    repro_match_before=False,
+                    repro_match_after=False,
+                    same_repro_command=False,
+                    original_failure_resolved=False,
+                    failure_changed_after_patch=False,
+                    safety_summary="No isolated copy run — patch validation skipped.",
+                    confidence_note="Patch validation skipped; no contribution from verified apply/repro loop.",
                 )
 
             review = ReviewerAgent().run(ctx, triage, logs_out, repro, plan, tracer)
@@ -173,6 +181,18 @@ class Orchestrator:
                 trace_file=trace_path,
                 project_root=self.project_root,
                 extra_artifacts=sorted(set(extra)),
+                run_id=run_id,
+                decision_path=[
+                    "LOADED",
+                    "TRIAGED",
+                    "LOGS_ANALYZED",
+                    "REPO_NAVIGATED",
+                    "REPRO_ATTEMPTED",
+                    "FIX_PLANNED",
+                    "PATCH_VALIDATED",
+                    "REVIEWED",
+                    "REPORTED",
+                ],
             )
             stage = Stage.REPORTED
 

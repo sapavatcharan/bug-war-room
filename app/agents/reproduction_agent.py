@@ -105,6 +105,7 @@ class ReproductionAgent:
         repro_dir: Path,
         project_root: Path,
     ) -> ReproductionOutput:
+        tracer.set_agent("ReproductionAgent")
         _ = repo
         repo_path = Path(ctx.repo_path).resolve()
         src = repo_path / "src"

@@ -34,4 +34,5 @@ def write_repro(
         {"dest_path": str(dest_path), "kind": kind, "bytes": len(content)},
         "write_file",
         _run,
+        files_touched=[str(dest_path.resolve())],
     )

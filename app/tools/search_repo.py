@@ -28,6 +28,7 @@ def search_repo_tool(
         summary = f"{len(hits)} hit(s) for /{pattern}/ in {repo_root.name}"
         return SearchRepoResult(hits=hits, summary=summary)
 
+    touched = [str(repo_root.resolve())]
     return with_trace(
         tracer,
         "search_repo",
@@ -39,4 +40,6 @@ def search_repo_tool(
         },
         "regex_search",
         _run,
+        command_executed=f"scan_repo pattern={pattern!r} glob={glob}",
+        files_touched=touched,
     )

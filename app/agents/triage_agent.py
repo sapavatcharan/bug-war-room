@@ -15,6 +15,7 @@ log = get_logger()
 
 class TriageAgent:
     def run(self, ctx: RunContext, tracer: TraceWriter) -> TriageOutput:
+        tracer.set_agent("TriageAgent")
         text = ctx.bug_report_text
         if not text.strip():
             text = Path(ctx.bug_report_path).read_text(encoding="utf-8", errors="replace")

@@ -1,5 +1,7 @@
 """Run a Python script and capture output."""
 
+import shlex
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional
@@ -23,12 +25,13 @@ def run_script(
     cwd: Path,
     extra_env: Optional[Dict[str, str]] = None,
 ) -> RunScriptResult:
+    cmd = [sys.executable, str(script_path)]
+    cmd_str = " ".join(shlex.quote(c) for c in cmd)
+
     def _run() -> RunScriptResult:
         import os
-        import sys
 
         env = {**os.environ, **(extra_env or {})}
-        cmd = [sys.executable, str(script_path)]
         res = run_command(cmd, cwd=cwd, env=env, timeout=120)
         summary = f"exit={res.exit_code}"
         return RunScriptResult(
@@ -44,4 +47,6 @@ def run_script(
         {"script_path": str(script_path), "cwd": str(cwd)},
         "execute_script",
         _run,
+        command_executed=cmd_str,
+        files_touched=[str(script_path.resolve())],
     )

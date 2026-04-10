@@ -42,4 +42,5 @@ def extract_stacktrace(
         {"log_path": str(log_path)},
         "parse_traceback",
         _run,
+        files_touched=[str(log_path.resolve())],
     )

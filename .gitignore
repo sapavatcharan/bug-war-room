@@ -8,3 +8,4 @@ generated/20*/
 *.egg-info/
 dist/
 build/
+.DS_Store

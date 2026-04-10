@@ -303,6 +303,29 @@ def demo_cmd(
         )
     )
 
+    rep_cmd = " ".join(report.reproduction.command) if report.reproduction.command else "n/a"
+    val_cmd = " ".join(pv.repro_command) if pv.repro_command else rep_cmd
+    sel_full = report.root_cause_analysis.selected_hypothesis
+    sel_short = (sel_full[:200] + "…") if len(sel_full) > 200 else sel_full
+    before_st = pv.before.status
+    after_st = pv.after.status
+    trace_json = run_base / "traces" / "run_trace.jsonl"
+    snapshot = (
+        f"[bold]decision[/bold] {decision}\n"
+        f"[bold]selected root cause[/bold] {sel_short}\n"
+        f"[bold]repro artifact[/bold] {repro_abs or 'n/a'}\n"
+        f"[bold]repro command[/bold] {rep_cmd}\n"
+        f"[bold]validation repro command[/bold] {val_cmd}\n"
+        f"[bold]patch file[/bold] {patch_path}\n"
+        f"[bold]before status[/bold] {before_st}\n"
+        f"[bold]after status[/bold] {after_st}\n"
+        f"[bold]final_report.json[/bold] {json_path}\n"
+        f"[bold]evidence_pack.md[/bold] {evidence_path}\n"
+        f"[bold]run_trace.md[/bold] {trace_md}\n"
+        f"[bold]run_trace.jsonl[/bold] {trace_json}"
+    )
+    console.print(Panel.fit(snapshot, title="Reviewer snapshot (copy paths)", border_style="blue"))
+
 
 @app.command("test-repro")
 def test_repro_cmd(

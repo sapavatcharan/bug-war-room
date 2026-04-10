@@ -20,6 +20,7 @@ class RepoNavigatorAgent:
         logs: LogAnalysisOutput,
         tracer: TraceWriter,
     ) -> RepoNavigationOutput:
+        tracer.set_agent("RepoNavigatorAgent")
         repo = Path(ctx.repo_path)
         suspect_files: list[str] = []
         symbols: list[str] = []

@@ -1,5 +1,7 @@
 """Run pytest on a path and capture output."""
 
+import shlex
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional
@@ -23,12 +25,13 @@ def run_pytest(
     cwd: Path,
     extra_env: Optional[Dict[str, str]] = None,
 ) -> RunPytestResult:
+    cmd = [sys.executable, "-m", "pytest", str(test_path), "-v", "--tb=short"]
+    cmd_str = " ".join(shlex.quote(c) for c in cmd)
+
     def _run() -> RunPytestResult:
         import os
-        import sys
 
         env = {**os.environ, **(extra_env or {})}
-        cmd = [sys.executable, "-m", "pytest", str(test_path), "-v", "--tb=short"]
         res = run_command(cmd, cwd=cwd, env=env, timeout=120)
         summary = f"exit={res.exit_code} stdout_bytes={len(res.stdout)}"
         return RunPytestResult(
@@ -44,4 +47,6 @@ def run_pytest(
         {"test_path": str(test_path), "cwd": str(cwd)},
         "execute_pytest",
         _run,
+        command_executed=cmd_str,
+        files_touched=[str(test_path.resolve())],
     )

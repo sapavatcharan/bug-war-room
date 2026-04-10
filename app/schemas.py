@@ -83,7 +83,9 @@ class FixPlanningOutput(BaseModel):
     root_cause_summary: str = ""
     root_cause_detailed: str = ""
     impacted_files: list[str] = Field(default_factory=list)
+    functions_impacted: list[str] = Field(default_factory=list)
     proposed_changes: list[str] = Field(default_factory=list)
+    why_this_fix_matches_the_evidence: str = ""
     safety_notes: list[str] = Field(default_factory=list)
     risks: list[str] = Field(default_factory=list)
     validation_tests_to_add: list[str] = Field(default_factory=list)
@@ -118,6 +120,15 @@ class PatchValidationSection(BaseModel):
     after: PatchValidationSnapshot
     regression_test_results: list[RegressionTestResult]
     conclusion: str
+    repro_match_before: bool = False
+    repro_match_after: bool = False
+    same_repro_command: bool = True
+    repro_command: list[str] = Field(default_factory=list)
+    original_failure_resolved: bool = False
+    failure_changed_after_patch: bool = False
+    patched_workspace: str = ""
+    safety_summary: str = ""
+    confidence_note: str = ""
 
 
 class BugSummarySection(BaseModel):
@@ -130,10 +141,14 @@ class BugSummarySection(BaseModel):
 
 
 class EvidenceSection(BaseModel):
+    error_signature: str = ""
+    exact_log_lines: list[str] = Field(default_factory=list)
     stack_trace_excerpt: str
     relevant_log_lines: list[str]
     suspect_files: list[str]
     suspect_symbols: list[str]
+    repo_search_hits: list[str] = Field(default_factory=list)
+    correlation_reasoning: str = ""
 
 
 class ReproductionSection(BaseModel):
@@ -142,6 +157,11 @@ class ReproductionSection(BaseModel):
     artifact_path: str
     command: list[str]
     observed_output: str
+    exit_code: Optional[int] = None
+    stdout_excerpt: str = ""
+    stderr_excerpt: str = ""
+    matched_error_signature: bool = False
+    consistency_check: str = ""
     minimization_attempted: bool = False
     minimization_result: str = ""
     final_artifact_reason: str = ""
@@ -155,9 +175,13 @@ class RootCauseHypothesisSection(BaseModel):
 
 class PatchPlanSection(BaseModel):
     files_impacted: list[str]
+    functions_impacted: list[str] = Field(default_factory=list)
     proposed_changes: list[str]
+    why_this_fix_matches_the_evidence: str = ""
     safety_notes: list[str]
     risks: list[str]
+    patch_risks: list[str] = Field(default_factory=list)
+    validation_checks: list[str] = Field(default_factory=list)
 
 
 class ValidationPlanSection(BaseModel):
@@ -173,9 +197,12 @@ class ReviewerNotesSection(BaseModel):
 
 
 class TraceabilitySection(BaseModel):
+    run_id: str = ""
     trace_file: str
     trace_markdown: str = ""
+    tool_calls: list[dict[str, Any]] = Field(default_factory=list)
     generated_artifacts: list[str]
+    decision_path: list[str] = Field(default_factory=list)
 
 
 class ConfidenceComponentsSection(BaseModel):
@@ -215,10 +242,14 @@ class FinalReport(BaseModel):
 
 
 class ToolCallRecord(BaseModel):
+    timestamp: str = ""
     run_id: str
+    agent_name: str = ""
     tool_name: str
     input_summary: dict[str, Any]
     action: str
+    command_executed: Optional[str] = None
+    files_touched: list[str] = Field(default_factory=list)
     output_summary: str
     success: bool
     duration_ms: float
@@ -235,3 +266,11 @@ class PatchValidationHandoff(BaseModel):
     degraded_patch_apply_failed: bool = False
     degraded_wrong_failure_after_patch: bool = False
     patched_workspace: str = ""
+    repro_command: list[str] = Field(default_factory=list)
+    repro_match_before: bool = False
+    repro_match_after: bool = False
+    same_repro_command: bool = True
+    original_failure_resolved: bool = False
+    failure_changed_after_patch: bool = False
+    safety_summary: str = ""
+    confidence_note: str = ""

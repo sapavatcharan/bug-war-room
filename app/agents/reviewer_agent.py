@@ -29,6 +29,7 @@ class ReviewerAgent:
         plan: FixPlanningOutput,
         tracer: TraceWriter,
     ) -> ReviewerOutput:
+        tracer.set_agent("ReviewerAgent")
         challenges: list[str] = []
         edge_cases: list[str] = []
         questions: list[str] = []

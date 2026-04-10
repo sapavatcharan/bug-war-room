@@ -27,11 +27,13 @@ def write_report_files(
     reports_dir: Path,
     base_name: str = "final_report",
 ) -> WriteReportResult:
+    jp = reports_dir / f"{base_name}.json"
+    yp = reports_dir / f"{base_name}.yaml"
+    mp = reports_dir / f"{base_name}_summary.md"
+    report_paths = [str(p.resolve()) for p in (jp, yp, mp)]
+
     def _run() -> WriteReportResult:
         reports_dir.mkdir(parents=True, exist_ok=True)
-        jp = reports_dir / f"{base_name}.json"
-        yp = reports_dir / f"{base_name}.yaml"
-        mp = reports_dir / f"{base_name}_summary.md"
 
         data = report.model_dump(mode="json")
         jp.write_text(json.dumps(data, indent=2), encoding="utf-8")
@@ -91,4 +93,15 @@ def write_report_files(
         {"reports_dir": str(reports_dir), "base_name": base_name},
         "write_json_yaml_md",
         _run,
+        command_executed=f"write {base_name}.{{json,yaml,_summary.md}}",
+        files_touched=report_paths,
     )
+
+
+def refresh_serialized_reports(report: FinalReport, reports_dir: Path, base_name: str = "final_report") -> None:
+    """Rewrite JSON/YAML on disk after mutating the in-memory report (e.g. final trace rows)."""
+    jp = reports_dir / f"{base_name}.json"
+    yp = reports_dir / f"{base_name}.yaml"
+    data = report.model_dump(mode="json")
+    jp.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    yp.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True), encoding="utf-8")

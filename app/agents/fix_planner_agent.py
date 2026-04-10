@@ -49,6 +49,7 @@ class FixPlannerAgent:
         tracer: TraceWriter,
         patches_dir: Path,
     ) -> FixPlanningOutput:
+        tracer.set_agent("FixPlannerAgent")
         res = search_repo_tool(
             tracer,
             Path(ctx.repo_path),
@@ -113,6 +114,25 @@ class FixPlannerAgent:
             "Downstream persistence expecting naive timestamps may need serialization "
             "adjustments.",
         ]
+
+        functions_impacted = [
+            "compute_next_window",
+            "schedule_reminder",
+            "parse_user_datetime",
+        ]
+        why_this_fix_matches = (
+            "Log-derived signature is the stdlib rule against comparing naive vs aware datetimes; "
+            "the stack excerpt points at `service.schedule_reminder` where `<` orders user input "
+            "against the scheduler window. Repo search shows `datetime.now(` in "
+            "`scheduler.compute_next_window` with no timezone, while `parse_user_datetime` documents "
+            "UTC-aware output for `Z` ISO strings — so the failure mode is explained without "
+            "invoking a broken parser. The pytest repro calls only `schedule_reminder` with a "
+            "`Z` timestamp and fails with the same TypeError family, isolating that comparison. "
+            "Hypothesis 2 (parser bug) is rejected: logs show ordering failure, not "
+            "`ValueError` from parsing. Hypothesis 3 (third-party) is rejected: frames are "
+            "service/stdlib only. Anchoring `now` to `timezone.utc` aligns both sides with the "
+            "documented aware parser output."
+        )
 
         patch_path = patches_dir / "candidate_patch.diff"
         write_repro(tracer, patch_path, CANDIDATE_DIFF, kind="diff")
@@ -187,7 +207,9 @@ class FixPlannerAgent:
             root_cause_summary=summary,
             root_cause_detailed=detailed,
             impacted_files=impacted,
+            functions_impacted=functions_impacted,
             proposed_changes=proposed,
+            why_this_fix_matches_the_evidence=why_this_fix_matches,
             safety_notes=safety,
             risks=risks,
             validation_tests_to_add=[

@@ -59,4 +59,5 @@ def search_logs(
         },
         "scan_log_file",
         _run,
+        files_touched=[str(log_path.resolve())],
     )
