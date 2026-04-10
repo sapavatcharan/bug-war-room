@@ -1,0 +1,15 @@
+2026-04-10T14:22:00Z INFO deploy_image=reminder-svc_0.4.2_sha441 host=worker-7 region=us-east-1
+2026-04-10T14:22:00Z WARN request_id=8f19 feature_flags.shadow_parse=off (informational only — not on crash path)
+2026-04-10T14:22:01Z INFO request_id=8f1a healthcheck ok
+2026-04-10T14:22:04Z WARN request_id=8f1b legacy_auth_header is deprecated and will be removed in Q3
+2026-04-10T14:22:05Z INFO request_id=8f1c redis_pool warmup complete
+2026-04-10T14:22:10Z WARN request_id=8f1d slow query: SELECT * FROM reminders WHERE tenant_id=%s took 480ms
+2026-04-10T14:22:11Z INFO request_id=8f1e POST /v1/reminders tenant=acme payload={"fire_at":"2026-04-10T15:00:00Z"}
+2026-04-10T14:22:11Z ERROR request_id=8f1e unhandled exception in reminder pipeline
+Traceback (most recent call last):
+  File "/srv/mini_repo/src/service.py", line 19, in schedule_reminder
+    if user_dt < next_win:
+       ^^^^^^^^^^^^^^^^^^
+TypeError: can't compare offset-naive and offset-aware datetimes
+2026-04-10T14:22:12Z INFO request_id=8f1f metrics flush ok
+2026-04-10T14:22:15Z WARN request_id=8f20 disk usage on /var/log at 78% — rotate recommended

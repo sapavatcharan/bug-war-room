@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bug-war-room"
+version = "0.1.0"
+description = "Deterministic multi-agent CLI for bug triage, repro, and patch planning"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "typer>=0.12.0",
+  "pydantic>=2.5.0",
+  "pydantic-settings>=2.1.0",
+  "pyyaml>=6.0.1",
+  "rich>=13.7.0",
+  "pytest>=7.4.0",
+  "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest-cov>=4.1.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
